@@ -3,7 +3,9 @@ from bakery_canvas import get_courses
 from bakery_canvas import get_submissions, Submission
 import matplotlib.pyplot as plt
 from datetime import datetime
-
+'''
+This file uses canvas data and ONLY canvas data. To use you must first obtain a canvas user_token from the canvas settings
+'''
 def count_courses(user_token: str) -> int:
     '''
     Purpose:
