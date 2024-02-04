@@ -1,0 +1,121 @@
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt 
+import seaborn as sb 
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+df= pd.read_csv("Insert CSV here")
+print(df.shape)
+print(" ")
+print(df.describe())
+print(" ")
+
+plt.figure(figsize=(10,4))
+plt.plot(df["Close"])
+plt.title("Hershey Stock Closing Price")
+plt.ylabel("Price in USD")
+plt.xlabel("Days Since 1/30/2023")
+plt.show()
+
+categories=["Open","High","Low","Close","Adj Close","Volume"]
+plt.subplots(figsize=(20,20))
+for x, col in enumerate(categories):
+  plt.subplot(2,3,x+1)
+  sb.boxplot(df[col])
+plt.show()
+
+split_by_date = df["Date"].str.split('-', expand=True)
+ 
+df["day"] = split_by_date[2].astype('int')
+df["month"] = split_by_date[0].astype('int')
+df["year"] = split_by_date[1].astype('int')
+ 
+df["is_quarter_end"] = np.where(df["month"]%3==0,1,0)
+
+print(df.head())
+
+open_price= df["Open"].values
+close_price=df["Close"].values
+high_price=df["High"].values
+low_price=df["Low"].values
+dates=df["Date"].values
+
+plt.subplot(2,2,1)
+plt.scatter(dates,open_price)
+plt.xlabel("Date")
+plt.ylabel("Opening Price")
+
+plt.subplot(2,2,2)
+plt.scatter(dates,close_price)
+plt.xlabel("Date")
+plt.ylabel("Closing Price")
+
+plt.subplot(2,2,3)
+plt.scatter(dates,high_price)
+plt.xlabel("Date")
+plt.ylabel("High Price")
+
+plt.subplot(2,2,4)
+plt.scatter(dates,low_price)
+plt.xlabel("Date")
+plt.ylabel("Low Price")
+plt.show()
+
+datesN=(df['Date'].str.replace("-","").astype(int)).values
+datesR=datesN.reshape(-1,1) 
+
+
+open1_train, open1_test, open2_train, open2_test = train_test_split(datesR, open_price, test_size=0.25, random_state=42)
+
+close1_train, close1_test, close2_train, close2_test = train_test_split(datesR, close_price, test_size=0.25, random_state=42)
+
+high1_train, high1_test, high2_train, high2_test = train_test_split(datesR, high_price, test_size=0.25, random_state=42)
+
+low1_train, low1_test, low2_train, low2_test = train_test_split(datesR, low_price, test_size=0.25, random_state=42)
+
+model_open = LinearRegression()
+model_open.fit(open1_train, open2_train)
+
+prediction_open = model_open.predict(open1_test)
+
+plt.subplot(2,1,1)
+plt.scatter(dates,open_price)
+plt.subplot(2,1,2)
+plt.scatter(open1_test, open2_test, marker='o', color='blue', label='Actual Prices')
+plt.plot(open1_test, prediction_open, color='red', linewidth=2, label='Predicted Prices')
+plt.title('Opening Stock Price Prediciton with Linear Regression')
+plt.xlabel('Date')
+plt.ylabel('Price at opening')
+plt.legend()
+plt.show()
+
+model_close= LinearRegression()
+model_close.fit(high1_train,high2_train)
+
+prediction_high= model_close.predict(high1_test)
+
+plt.subplot(2,1,1)
+plt.scatter(dates,high_price)
+plt.subplot(2,1,2)
+plt.scatter(high1_test, high2_test, marker='o', color='blue', label='Actual Prices')
+plt.plot(high1_test, prediction_high, color='red', linewidth=2, label='Predicted Prices')
+plt.title('High Stock Price Prediciton with Linear Regression')
+plt.xlabel('Date')
+plt.ylabel('Price at Highest')
+plt.legend()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
